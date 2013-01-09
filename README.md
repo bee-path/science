@@ -14,9 +14,6 @@ geopy
 
 The module is fully documented (but could be improved).
 
-The info about what the functions do is on the info_soft.pdf file (in Catalan)
-
-
 
 
 Authors: Oleguer Sagarra and Mario Gutiérrez Roig
