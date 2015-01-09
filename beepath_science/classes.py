@@ -492,7 +492,7 @@ class Flight(object):
         if len(points)==0:
             print "Need an array of x-y-time points to work"
         else:
-			points = sorted(points,key=lambda x: x[2]) # sort by increasing time
+            points = sorted(points,key=lambda x: x[2]) # sort by increasing time
             self.__setattr__('UTM',points)
             ### Should implement the rest as methods
             self.__setattr__('N_points',len(self.UTM)) # as method
@@ -596,8 +596,7 @@ class Stop(Flight):
         if len(points)==0:
             print "Need an array of lat-lon-time points to work"
         else:
-			points = sorted(points,key=lambda x: x[2]) # sort by increasing time
-# I am here 
+            points = sorted(points,key=lambda x: x[2]) # sort by increasing time
             self.__setattr__('UTM',points)
             ### Should implement the rest as methods
             self.__setattr__('N_points',len(self.UTM)) # as method

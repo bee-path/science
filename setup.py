@@ -8,7 +8,7 @@ Created on Wed Dec  4 11:12:23 2013
 from setuptools import setup, find_packages
 readme = open('README.md').read()
 setup(name='beepath_science',
-      version='0.76',
+      version='0.77',
       author='Oleguer Sagarra & Mario Gutierrez-Roig',
       author_email='osagarra@ub.edu',
       license='GPLv3',
