@@ -7,11 +7,11 @@ Created on Wed Dec  4 11:12:23 2013
 
 from setuptools import setup, find_packages
 readme = open('README.txt').read()
-setup(name='bee_path_science',
-      version='0.2',
+setup(name='beepath_science',
+      version='0.75',
       author='Oleguer Sagarra',
       author_email='osagarra@ub.edu',
       #license='',
-      description='bee-path.net scientiffic package',
+      description='beepath.net scientiffic package',
       long_description=readme,
       packages=find_packages())
