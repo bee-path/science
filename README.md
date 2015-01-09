@@ -27,6 +27,14 @@ Being a usual python package, to install just type:
 	$ python setup.py install
 ```	
 
+And to import,
+
+```
+    $ import beepath_science 
+```
+
+and use as needed.
+
 Note that some dependencies are needed. Mainly:
 
 - [Numpy](http://www.numpy.org/)
