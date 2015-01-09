@@ -6,7 +6,7 @@ Created on Wed Dec  4 11:12:23 2013
 """
 
 from setuptools import setup, find_packages
-readme = open('README.txt').read()
+readme = open('README.md').read()
 setup(name='beepath_science',
       version='0.75',
       author='Oleguer Sagarra & Mario Gutierrez-Roig',

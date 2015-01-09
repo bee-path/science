@@ -33,7 +33,7 @@ Note that some dependencies are needed. Mainly:
 - [Pyproj](https://github.com/jswhit/pyproj)
 - [Shapely](http://toblerity.org/shapely/)
 - [Matplotlib](http://matplotlib.org/) (Only for the mapping module)
-- [Simpleklm](https://code.google.com/p/simplekml/) (Only for the mapping module)
+
 
 ## License
 
