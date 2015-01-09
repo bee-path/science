@@ -33,6 +33,7 @@ def stopormove(Points,R):
     Warning: Performs a stopormove conditoin for point i based on distance to point i+1
     """
     Points=np.array(Points)
+    Points = sorted(Point,key = lambda x:x[-1]) # make sure points are in decreasing order in time!
     if len(Points) > 1:
         mov = np.ones (len (Points), dtype = int)
 #        for i in iter (range (len (Points) - 2)): # all points e
@@ -60,6 +61,8 @@ def stopormove_mean(Points,R): # Experimental stuff
     output:
         - x-y-t-s Points, where s is status: 0 for stoped, 1 for walking
     """
+    Points=np.array(Points)
+    Points = sorted(Point,key = lambda x:x[2]) # make sure points are in decreasing order in time! 
     if len(Points) > 1:
         mov = np.ones((len (Points)), dtype = np.int)
         st = np.array([Points[0][0:2]])
@@ -87,6 +90,8 @@ def stopormove_log(Points,R): # Experimental stuff
     output:
         - x-y-t-s Points, where s is status: 0 for stoped, 1 for walking
     """
+    Points=np.array(Points)
+    Points = sorted(Point,key = lambda x:x[2]) # make sure points are in decreasing order in time! 
     if len(Points)>1:
         mov = np.ones((len(Points)),dtype=np.int)
         st = np.array([Points[0][0:2]])
@@ -121,6 +126,8 @@ def stopormove_v(Points,r_min,t_min,t_max, verbose=False):
     output:
         - x-y-t-s Points, where s is status: 0 for stoped, 1 for walking
     """
+    Points=np.array(Points)
+    Points = sorted(Point,key = lambda x:x[2]) # make sure points are in decreasing order in time! 
     v_min=r_min*1./t_min
     if len(Points)>1:
         mov=np.ones((len(Points)),dtype=np.int)
@@ -226,6 +233,8 @@ def rectangularmodel(Points,R,R_stop):
     output:
         - Track Class with Flights and Stops
     """
+    Points=np.array(Points)
+    Points = sorted(Point,key = lambda x:x[2]) # make sure points are in decreasing order in time! 
     Track=cls.Trace() # create Trace
     dummy=[] # create dummy list
     #if Points[0][3]==1: print "first a flight?" # first is a flight (this is impossible) --> checked already
