@@ -40,7 +40,6 @@ Note that some dependencies are needed. Mainly:
 - [Numpy](http://www.numpy.org/)
 - [Pyproj](https://github.com/jswhit/pyproj)
 - [Shapely](http://toblerity.org/shapely/)
-- [Matplotlib](http://matplotlib.org/) (Only for the mapping module)
 
 
 ## License
