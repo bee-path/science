@@ -52,76 +52,14 @@ def stopormove(Points,R):
         mov = [0]
     return np.hstack ((Points, np.reshape(mov, (len (Points), 1))))
 
-def stopormove_mean(Points,R): # Experimental stuff
+def stopormove_v(Points,r_min,t_min,t_max):
     # Needs to be rewritten (forward stop or move)
     """Calculates which update corresponds to a stop or to a movement
     input:
-        - x-y-t GPS UTM converted points
-        - tolerance parameter (in meters)
-    output:
-        - x-y-t-s Points, where s is status: 0 for stoped, 1 for walking
-    """
-    Points=np.array(Points)
-    Points = sorted(Points,key = lambda x:x[2]) # make sure points are in decreasing order in time! 
-    if len(Points) > 1:
-        mov = np.ones((len (Points)), dtype = np.int)
-        st = np.array([Points[0][0:2]])
-        for i in iter (range (1, len (Points))):
-            c = np.average (st, axis=0)
-            r = Points[i][0:2] - c
-            d = np.linalg.norm (r)
-            if d < np.float(R):
-                mov[i] = 0
-                st = np.append (st, [Points[i][0:2]], axis=0)
-            else:
-                st = np.array([Points[i][0:2]])
-        mov[-1] = 0 # last point is a stop by default
-        mov[0]  = 0 # first point is a stop by default
-    else:
-        mov=[0]
-    return np.hstack((Points,np.reshape(mov,(len(Points),1))))
-
-def stopormove_log(Points,R): # Experimental stuff
-    # Needs to be rewritten (forward stop or move)
-    """Calculates which update corresponds to a stop or to a movement
-    input:
-        - x-y-t GPS UTM converted points
-        - tolerance parameter (in meters)
-    output:
-        - x-y-t-s Points, where s is status: 0 for stoped, 1 for walking
-    """
-    Points=np.array(Points)
-    Points = sorted(Points,key = lambda x:x[2]) # make sure points are in decreasing order in time! 
-    if len(Points)>1:
-        mov = np.ones((len(Points)),dtype=np.int)
-        st = np.array([Points[0][0:2]])
-        for i in iter (range (1, len (Points))):
-            c = np.average (st, axis=0)
-            r = Points[i][0:2] - c
-            d = np.linalg.norm (r)
-            if d < (R * (1. + np.log (len(st)))):
-                mov[i] = 0
-                st = np.append (st, [Points[i][0:2]], axis=0)
-            else:
-                st = np.array([Points[i][0:2]])
-        mov[-1]=0 # last point is a stop by default
-        mov[0]=0 # first point is a stop by default
-    else:
-        mov=[0]
-    return np.hstack((Points,np.reshape(mov,(len(Points),1))))
-
-
-
-
-
-
-
-def stopormove_v(Points,r_min,t_min,t_max, verbose=False):
-    # Needs to be rewritten (forward stop or move)
-    """Calculates which update corresponds to a stop or to a movement
-    input:
-        - x-y-t GPS UTM converted points
-        - tolerance parameter (in meters)
+        - Points: x-y-t GPS UTM converted points
+        - Minimal tolerance of distance (in meters)
+        - t_min: Minimal time between updates
+        - t_max: Maximal time between updates
         If verbose: Prints verbose
     output:
         - x-y-t-s Points, where s is status: 0 for stoped, 1 for walking
@@ -131,27 +69,84 @@ def stopormove_v(Points,r_min,t_min,t_max, verbose=False):
     v_min=r_min*1./t_min
     if len(Points)>1:
         mov=np.ones((len(Points)),dtype=np.int)
-        for i in iter(range(len(Points)-1)):
-            r=Points[i][0:2]-Points[i+1][0:2]
-            t=Points[i+1][2]-Points[i][2]
-            d=np.linalg.norm(r)
-            if t<t_min: #not enough time or too much time
-                print "# Too short or too long, t=%f" % (t)
-                if i!=0:
-                    mov[i]=mov[i-1] # copy last
-                else:
-                    mov[i]=0
-            elif t>t_max: mov[i]=1; # if too long, moving as default (malfoctioning GPS)
+        for i,p in enumerate(Points[:-1]): # all points (except last)
+            r = Points[i+1][0:2] - p[0:2] # delta_x,delta_y
+            t = Points[i+1][2] - p[2] # delta_t
+            d = np.linalg.norm (r) # norm
+            ### time check ###
+            if t<t_min: # Too short, then stop
+                mov[i+1] = 0 # update
+            elif t>t_max: mov[i+1]=1; # Too long, moving as default (malfoctioning GPS)
             else:
-                if d*1./t<v_min: # not enough velocity, but enough time
-                    if d*1./t>0.3 and verbose: print "# Too slow, v=%f" % (d*1./t)                
+               if d*1./t<v_min: # not enough velocity, but enough time
                     mov[i]=0    
-        mov[-1]=0 # last point is a stop by default
-        mov[0]=0 # first point is a stop by default
+        if mov[-1] == 1: # if last point moving
+            pnew= Points[-1]
+            mov=np.append(mov,[0])
+            Points2=np.append(Points,pnew)
+            Points=np.reshape(Points2,(len(Points)+1,3))
+        mov[0] = 0 # first point is a stop by default
     else:
-        mov=[0]
-    return np.hstack((Points,np.reshape(mov,(len(Points),1))))
+        mov = [0]
+    return np.hstack ((Points, np.reshape(mov, (len (Points), 1))))
 
+#def stopormove_mean(Points,R): # Experimental stuff
+    ## Needs to be rewritten (forward stop or move)
+    #"""Calculates which update corresponds to a stop or to a movement
+    #input:
+        #- x-y-t GPS UTM converted points
+        #- tolerance parameter (in meters)
+    #output:
+        #- x-y-t-s Points, where s is status: 0 for stoped, 1 for walking
+    #"""
+    #Points=np.array(Points)
+    #Points = sorted(Points,key = lambda x:x[2]) # make sure points are in decreasing order in time! 
+    #if len(Points) > 1:
+        #mov = np.ones((len (Points)), dtype = np.int)
+        #st = np.array([Points[0][0:2]])
+        #for i in iter (range (1, len (Points))):
+            #c = np.average (st, axis=0)
+            #r = Points[i][0:2] - c
+            #d = np.linalg.norm (r)
+            #if d < np.float(R):
+                #mov[i] = 0
+                #st = np.append (st, [Points[i][0:2]], axis=0)
+            #else:
+                #st = np.array([Points[i][0:2]])
+        #mov[-1] = 0 # last point is a stop by default
+        #mov[0]  = 0 # first point is a stop by default
+    #else:
+        #mov=[0]
+    #return np.hstack((Points,np.reshape(mov,(len(Points),1))))
+
+#def stopormove_log(Points,R): # Experimental stuff
+    ## Needs to be rewritten (forward stop or move)
+    #"""Calculates which update corresponds to a stop or to a movement
+    #input:
+        #- x-y-t GPS UTM converted points
+        #- tolerance parameter (in meters)
+    #output:
+        #- x-y-t-s Points, where s is status: 0 for stoped, 1 for walking
+    #"""
+    #Points=np.array(Points)
+    #Points = sorted(Points,key = lambda x:x[2]) # make sure points are in decreasing order in time! 
+    #if len(Points)>1:
+        #mov = np.ones((len(Points)),dtype=np.int)
+        #st = np.array([Points[0][0:2]])
+        #for i in iter (range (1, len (Points))):
+            #c = np.average (st, axis=0)
+            #r = Points[i][0:2] - c
+            #d = np.linalg.norm (r)
+            #if d < (R * (1. + np.log (len(st)))):
+                #mov[i] = 0
+                #st = np.append (st, [Points[i][0:2]], axis=0)
+            #else:
+                #st = np.array([Points[i][0:2]])
+        #mov[-1]=0 # last point is a stop by default
+        #mov[0]=0 # first point is a stop by default
+    #else:
+        #mov=[0]
+    #return np.hstack((Points,np.reshape(mov,(len(Points),1))))
 
 ### Split flights ###
 
@@ -304,11 +299,10 @@ def angularmodel(oTrace,theta_max):
     # and now merge if needed
     for gr in fl_group:
         if len(gr)>1: # if more than 1 flight
-            r=np.array([f.UTM[-1][:-1]-f.UTM[0][:-1] for f in gr])
-            dif_angle=geom.angle_diff(r)
-            #dif_angle=np.abs(np.diff(np.arctan2(r.T[1],r.T[0]))) # not really working
-            #print np.rad2deg(dif_angle)
-            if any(dif_angle<0): print dif_angle
+            dif_angle = []
+            for f in gr: # for each flight check delta orientation
+                dif_angle.append(geom.angle_vect(f.UTM[-1][:-1],f.UTM[0][:-1]))
+            dif_angle = np.array(dif_angle)
             if len(np.where(dif_angle>np.deg2rad(theta_max))[0])!=0: # if something to merge
                 new_fl=np.split(gr,np.where(dif_angle>np.deg2rad(theta_max))[0]+1)
                 for fl in new_fl: 
