@@ -8,6 +8,7 @@ import models
 import filters
 import stats
 import classes
+import tests
 
 try:
     import numpy as np
@@ -23,7 +24,7 @@ except ImportError:
         Geojson        
     """
 
-__all__ = ["constants" ,"formats" ,"geodesics" ,"geometrics" ,"misc", "models", "filters", "stats", "classes"] #"mapping"
+__all__ = ["constants" ,"formats" ,"geodesics" ,"geometrics" ,"misc", "models", "filters", "stats", "classes", "tests"] #"mapping"
 
 
 
