@@ -49,7 +49,7 @@ def generate_RW_points(beta,T = 3600., Delta_t = 0.1):
     
     """
     Npoints = np.floor(T*1./Delta_t)
-    sigma = np.sqrt(Delta_t*1./beta)
+    sigma = np.sqrt(2*Delta_t*1./beta)
     x = np.cumsum(np.random.normal(loc=0,scale=sigma,size=Npoints))
     y = np.cumsum(np.random.normal(loc=0,scale=sigma,size=Npoints))
     t = np.arange(Npoints)*Delta_t
@@ -131,7 +131,7 @@ def null_model_stops(Rmin=1,Rmax = 20, Np = 20, beta=1., T=3600., simulate=True,
 
 def prob(Rs, beta, tau):
     """ Computes stop-or-move probability """
-    R20 = tau/beta
+    R20 = 2*tau/beta
     return np.exp(-Rs * Rs / (2*R20))
 ### Stops ####
 def p_n_stops(Rs, beta, tau, Ntot):
@@ -147,3 +147,52 @@ def av_std_stop_length(Rs, beta , tau):
     avg = tau*(1.-p)/p
     std = np.sqrt((1-p)/(p*p))*tau
     return np.array([Rs,avg,std]).T
+
+
+### Flights ###
+## untested ##
+from scipy import special
+def I_N(Lf,Rf,R0,N):
+	""" 
+		Computes probability of having N points in a Box of size R_flight, L 
+		(Product of individual probabilities)
+	"""
+	NN = np.arange(1,N+1)
+	I1 = special.erf(Rf/R0/np.sqrt(NN))*special.erf(Lf/R0/np.sqrt(NN))*0.5
+	return np.prod(I1)
+
+def p_N_flights_Nf(Nf,Lf,Rf,R0,N):
+	""" 
+		Computes probability N of successive Nf flights consitute a flight (all inside the box) 
+		Product of probabilities N+i successive groups of points do not fit the box at once
+	"""
+	if N>Nf:
+		return 0
+	elif N==Nf:
+		return I_n(Lf,Rf,R0,Nf)
+	else:
+		Not_in = 1- I_n(Lf,Rf,R0,Nf)
+		for NN in np.arange(N+1,Nf)[::-1]:
+			#INf = I_Nf(Rf,Lf,R0,NN) # prob all fit in partition NN
+			Not_in *= 1- I_n(Lf,Rf,R0,NN) # prob all do not fit in partition NN
+		return I_n(Lf,Rf,R0,N)*Not_in
+
+def p_n_flight_Lf(N,Nf,Lf,Rf,R0,pmin=1e-10):
+	"""
+		Computes probability of having a flight of N updates conditioned on position of particle at time instant R_N
+	"""
+	suma = 0
+	p = prob(Rs, beta, tau)
+	Nf = 1
+	addition = 0
+	while addition>pmin:
+		addition = p**Nf*p_N_flights_Nf(Nf,Lf,Rf,R0,N)
+		suma +=addition
+		Nf+=1
+	return (1.-p)*suma
+
+def p_n_flight(N,Nf,Rf,R0,pmin=1e-10):
+	"""
+		Computes probability of having a flight of N updates, without conditioning.
+	"""
+	
