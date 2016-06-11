@@ -48,12 +48,12 @@ def filter_v_updates(points,v_max=50/3.6,zone=cnt.zone,UTM=True):
         if deltat >0:
             v=deltar/deltat
             if v>v_max:
-                print "Warning, bad point! v=%f" % (v)
+                #print "Warning, bad point! v=%f" % (v)
                 pass
             else:
                 lastp=p
                 gpoints.append(p)
         else:
-            print "Warning, repeated time! deltat = %f \t deltar = %f" %(deltat,deltar)
+            #print "Warning, repeated time! deltat = %f \t deltar = %f" %(deltat,deltar)
             pass
     return [np.array(gpoints)]
