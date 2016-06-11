@@ -92,8 +92,8 @@ def null_model_stops(Rmin=1,Rmax = 20, Np = 20, beta=1., T=3600., simulate=True,
     Rf      = kwargs.get('Rf',8.)
     Delta_t = kwargs.get('Delta_t',0.1)
     frac    = np.zeros(Np)
-    avg     = np.zeros(Np)
-    std     = np.zeros(Np)
+    s_avg     = np.zeros(Np)
+    #s_std     = np.zeros(Np)
     RRs     = np.linspace(Rmin,Rmax,Np)
     
     if simulate:
@@ -116,18 +116,18 @@ def null_model_stops(Rmin=1,Rmax = 20, Np = 20, beta=1., T=3600., simulate=True,
                 #dum_st = np.r_[dum_st,allt]
             #frac[i] = np.sum(dum_s)*1./np.sum(dum_p)
             frac[i] = len(np.where(p.T[-1]==0)[0])*1./len(p)
-            avg[i]  = np.mean(allt)
-            std[i]  = np.std(allt)
+            s_avg[i]  = np.mean(allt)
+            #s_std[i]  = np.std(allt)
     else:
         Np2 = np.floor(T/tau)
         p1 = p_n_stops(RRs, beta, tau, Np2)
         p2 = av_std_stop_length(RRs, beta, tau)
         frac = p1.T[1]
-        avg = p2.T[1]
-        std = p2.T[2]
-    return np.array([RRs,frac,avg,std]).T
+        s_avg = p2.T[1]
+        #s_std = p2.T[2]
+    return np.array([RRs,frac,s_avg]).T
         
-### Aux functions ###
+### Aux functions: Stops ###
 
 def prob(Rs, beta, tau):
     """ Computes stop-or-move probability """
@@ -147,3 +147,44 @@ def av_std_stop_length(Rs, beta , tau):
     avg = tau*(1.-p)/p
     std = np.sqrt((1-p)/(p*p))*tau
     return np.array([Rs,avg,std]).T
+
+### Aux functions: Flights ###
+from scipy import special as sp
+
+def CDF_flight_all(Rs,Rf,beta,tau=15,hmin=1,hmax=20,Np=1000,pmin=1e-10):
+    """ Computes unnormalized CDF of flight lengths """
+    if hmin<Rs:
+        hmin = Rs
+    hh = np.linspace(hmin,hmax,Np)
+    CDF = np.zeros(Np)
+    for i,h in enumerate(hh):
+        CDF[i] = CDF_flight_L(h,Rs,Rf,beta,tau,pmin)
+    return np.array([hh,CDF]).T
+        
+    
+
+def CDF_flight_L(L,Rs,Rf,beta,tau=15,pmin=1e-10):
+    """
+        Computes flight length CDF theoretical, unnormalized
+    """
+    if L<Rs: return 0
+    p = prob(Rs,beta,tau)
+    R0 = np.sqrt(tau/beta)
+    suma = 0
+    Nf = 1
+    In=100
+    while In>pmin:
+        In = I_box(L,Rf,R0,Nf)*(p/2.)**(Nf-1)
+        #print I_box(L,Rf,R0,Nf)
+        #print In
+        suma += In
+        Nf+=1
+    return suma
+
+def I_box(hh,Rf,R0,Nf):
+    N = np.sqrt(np.arange(Nf))
+    I = sp.erf(hh/(2*R0*N))*sp.erf(Rf/(2*R0*N))
+    return np.prod(I)
+    
+    
+    

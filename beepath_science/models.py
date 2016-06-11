@@ -53,7 +53,6 @@ def stopormove(Points,R):
     return np.hstack ((Points, np.reshape(mov, (len (Points), 1))))
 
 def stopormove_v(Points,r_min,t_min,t_max):
-    # Needs to be rewritten (forward stop or move)
     """Calculates which update corresponds to a stop or to a movement
     input:
         - Points: x-y-t GPS UTM converted points
