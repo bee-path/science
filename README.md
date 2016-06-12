@@ -15,10 +15,11 @@ The module is fully documented in a *quasi-standard*, *pythonic* way (but could 
 
 ## References 
 
-[1] To be added
-	[Link]()
+[1] Gutiérrez-Roig, M et altri
+	[Active and reactive behaviour in human mobility: the influence of attraction points on pedestrians](http://arxiv.org/abs/1511.03604)
 
-
+[2] Sagarra, O et altri
+    [Citizen Science Practices for Computational Social Science Research: The Conceptualization of Pop-Up Experiments](http://journal.frontiersin.org/article/10.3389/fphy.2015.00093/full)
 ## Installation 
 
 Being a usual python package, to install just type:
